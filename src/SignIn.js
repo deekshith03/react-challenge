@@ -11,7 +11,7 @@ import { IconButton, InputAdornment } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const theme = createTheme({
     palette: {
@@ -22,7 +22,11 @@ const theme = createTheme({
 });
 
 export default function SignIn() {
-    const [showPassword, setVisibility] = useState(false)
+  const [showPassword, setVisibility] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passError, setPassError] = useState(null);
+  const [password, setPassword] = useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -33,6 +37,48 @@ export default function SignIn() {
     });
   };
 
+    useEffect(() => {
+        if (password !== "") {
+            const re_digit = /^(?=.*\d)[a-zA-Z\d!@#$%^&*]{1,}$/,
+              re_lower = /^(?=.*[a-z])[a-zA-Z\d!@#$%^&*]{1,}$/,
+              re_upper = /^(?=.*[A-Z])[a-zA-Z\d!@#$%^&*]{1,}$/,
+              re_special = /^(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{1,}$/,
+                re_min = /^[a-zA-Z\d!@#$%^&*]{8,16}$/;
+            let message = [];
+            if (!re_min.test(String(password))) {
+                message.push("Password should be 8-16 characters\n");
+            }
+            if (!re_lower.test(String(password))) {
+              message.push("Password should have atleast one lower case character\n");
+            }
+            if (!re_upper.test(String(password))) {
+              message.push(
+                "Password should have atleast one upper case character\n");
+            }
+            if (!re_digit.test(String(password))) {
+              message.push(
+                "Password should have atleast one digit\n");
+            }
+            if (!re_special.test(String(password))) {
+              message.push(
+                "Password should have atleast one special case character\n");
+          }
+            setPassError(message.length === 0 ? null : message);
+        } 
+    }, [password]);
+    
+    useEffect(() => {
+        if (email !== "") {
+           const re =
+             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+           if (!re.test(String(email).toLowerCase())) {
+             setEmailError("Enter valid Email");
+           } else {
+             setEmailError("");
+           } 
+        }
+    }, [email]);
+    
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -64,7 +110,12 @@ export default function SignIn() {
               fullWidth
               id="email"
               label="Email Address"
-              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              error={emailError !== ""}
+              helperText={emailError}
               name="email"
               autoComplete="email"
               autoFocus
@@ -82,15 +133,24 @@ export default function SignIn() {
               fullWidth
               name="password"
               label="Password"
-              type={showPassword ? "text":"password"}
+              type={showPassword ? "text" : "password"}
               id="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              error={Array.isArray(passError)}
+              helperText={<ul>{passError?.map((row, i) => <li key={i}>{row}</li>)}</ul>}
               autoComplete="current-password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton aria-label="toggle password" onClick={()=>setVisibility(!showPassword)}>
-                      {showPassword && <LockIcon />}
-                      {!showPassword && <LockOpenIcon />}
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setVisibility(!showPassword)}
+                    >
+                      {showPassword && <LockOpenIcon />}
+                      {!showPassword && <LockIcon />}
                     </IconButton>
                   </InputAdornment>
                 ),
