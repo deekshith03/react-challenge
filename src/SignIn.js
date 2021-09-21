@@ -12,6 +12,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const theme = createTheme({
     palette: {
@@ -35,6 +36,14 @@ export default function SignIn() {
       email: data.get("email"),
       password: data.get("password"),
     });
+    axios.post('/api/login', data).then((res) => {
+      if (res === "sucess") {
+        document.cookie = "isLoggedIn=true"
+        window.location.replace = "/dashboard"
+      }
+      else {
+        alert("Try again later")
+    }})
   };
 
     useEffect(() => {
