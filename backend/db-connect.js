@@ -1,17 +1,17 @@
-var mysql = require('mysql')
-var connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'murugu123',
-  database: 'student_management'
-})
+// var mysql = require('mysql')
+// var connection = mysql.createConnection({
+//   host: 'localhost',
+//   user: 'root',
+//   password: 'deekshee@2001',
+//   database: 'student_management'
+// })
 
-connection.connect()
+// connection.connect()
 
-connection.query('SELECT * from skills AS solution', function (err, rows, fields) {
-  if (err) throw err
+// connection.query('SELECT * from skills AS solution', function (err, rows, fields) {
+//   if (err) throw err
 
-  console.log('The solution is: ', rows)
-})
+//   console.log('The solution is: ', rows)
+// })
 
-connection.end()
+// connection.end()
